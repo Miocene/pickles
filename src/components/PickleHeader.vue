@@ -3,7 +3,7 @@
 
         <!-- pickle info -->
         <div class="picklePage__leftHeaderPart">
-            <component-button view="clear" iconOnly>
+            <component-button view="clear" iconOnly @on-click="router.go(-1)">
                 <icon-back size="m" />
             </component-button>
             <h3 class="text text_size-m text_view-primary text_weight-bold picklePreview__name">#{{ pickleStore.$state.id }}</h3>
@@ -59,6 +59,8 @@
 </template>
 
 <script setup>
+    import router from '@/router'
+
     import { usePickleStore } from '@/stores/PickleStore'
     import IconBack from '@/components/icons/IconBack'
     import IconPlus from '@/components/icons/IconPlus'

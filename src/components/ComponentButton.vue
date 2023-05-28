@@ -1,10 +1,11 @@
 <template>
     <button class="button" :class="{ 'button_iconOnly': iconOnly, 
                                      'button_view-clear': props.view == 'clear',
-                                     'button_view-primary': props.view == 'primary' }">
+                                     'button_view-primary': props.view == 'primary' }"
+            @click="$emit('onClick')">
         {{ props.text }}
         <slot></slot>
-    </button>
+    </button >
 </template>
 
 <script setup>
