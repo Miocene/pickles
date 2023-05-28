@@ -5,16 +5,17 @@
             <component-button view="clear" iconOnly>
                 <icon-sun size="m"/>
             </component-button>
-            <a href="" class="user"><img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1064&q=80" /></a>
+            <a href="" class="user"><img :src="userStore.$state.photo" /></a>
         </div>
     </header>
 </template>
 
 <script setup>
-    // import {reactive} from 'vue'
+    import { useUserStore } from '@/stores/UserStore'
     import ComponentButton from '@/components/ComponentButton'
     import IconSun from '@/components/icons/IconSun'
     
+    const userStore = useUserStore()
 </script>
 
 <style scoped>

@@ -61,15 +61,7 @@
         display: grid;
         grid-template-rows: 60px calc(100vh - 60px);
     }
-
-    .buttonGroup {
-        display: flex;
-        border-radius: 99em;
-        transition: box-shadow 0.2s ease;
-    }
-    .buttonGroup:hover {
-        box-shadow: 0 0 0 1px var(--color-border-secondary);
-    }
+    
     .cursorNumber {
         position: absolute;
         min-width: 20px; height: 20px;

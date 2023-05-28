@@ -34,6 +34,9 @@
 
 
         <div class="picklePage__rightHeaderPart">
+            <component-button v-if="userStore.$state.admin" view="clear" iconOnly>
+                <icon-edit size="m" />
+            </component-button>
             <div class="buttonGroup">
                 <component-button view="clear" iconOnly @click="decreaseCellSize">
                     <icon-minus size="m" />
@@ -61,6 +64,7 @@
 <script setup>
     import router from '@/router'
 
+    import { useUserStore } from '@/stores/UserStore'
     import { usePickleStore } from '@/stores/PickleStore'
     import IconBack from '@/components/icons/IconBack'
     import IconPlus from '@/components/icons/IconPlus'
@@ -68,8 +72,10 @@
     import IconUndo from '@/components/icons/IconUndo'
     import IconRedo from '@/components/icons/IconRedo'
     import IconRestart from '@/components/icons/IconRestart'
+    import IconEdit from '@/components/icons/IconEdit'
     
     const pickleStore = usePickleStore()
+    const userStore = useUserStore()
 
     const increaseCellSize = () => {
         if(pickleStore.$state.cellSize < 34) pickleStore.$state.cellSize = pickleStore.$state.cellSize + 2
@@ -193,5 +199,14 @@
     .color > input {
         position: absolute;
         opacity: 0;
+    }
+
+    .buttonGroup {
+        display: flex;
+        border-radius: 99em;
+        transition: box-shadow 0.2s ease;
+    }
+    .buttonGroup:hover {
+        box-shadow: 0 0 0 1px var(--color-border-secondary);
     }
 </style>
