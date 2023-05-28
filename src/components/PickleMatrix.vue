@@ -1,8 +1,8 @@
 <template>
     <div class="picklePage__matrix" :style="{ '--leftNumbers': leftNumbers[0].length,
                                               '--topNumbers': topNumbers.length,
-                                              '--cellsX': props.showPickle.solution[0].length,
-                                              '--cellsY': props.showPickle.solution.length }">
+                                              '--cellsX': pickleStore.$state.solution[0].length,
+                                              '--cellsY': pickleStore.$state.solution.length }">
         <div class="matrix">
             <div class="matrix__corner matrix__corner-1"></div>
             <div class="matrix__corner matrix__corner-2"></div>
@@ -29,7 +29,7 @@
                 </div>
             </div>
             <div class="matrix__solution">
-                <div class="matrix__row" v-for="(row, itemY) in props.showPickle.solution" :key="row[0].y">
+                <div class="matrix__row" v-for="(row, itemY) in pickleStore.$state.solution" :key="row[0].y">
                     <div class="matrix__cell" v-for="(item, itemX) in row" :key="item.x" :attr-x="itemX" :attr-y="itemY"></div>
                 </div>
             </div>
@@ -48,16 +48,17 @@
 </template>
 
 <script setup>
-    import { defineProps } from 'vue';
     import { computed } from 'vue'
+
+    import { usePickleStore } from '@/stores/PickleStore'
     
-    const props = defineProps({ showPickle: {}})
+    const pickleStore = usePickleStore()
 
     const leftNumbers = computed(() => {
         let leftNumbers = []
         let leftNumbersLength = 0
 
-        props.showPickle.solution.forEach(row => {
+        pickleStore.$state.solution.forEach(row => {
             let rowNumbers = []
             let color = 0
             let number = 0
@@ -95,24 +96,24 @@
         let topNumbers = []
         let topNumbersHeight = 0
 
-        for(let x = 0; x < props.showPickle.solution[0].length; x++) {
+        for(let x = 0; x < pickleStore.$state.solution[0].length; x++) {
             let colNumbers = []
             let color = 0
             let number = 0
             
-            if(props.showPickle.solution[0][x] > 0) {
-                color = props.showPickle.solution[0][x]
+            if(pickleStore.$state.solution[0][x] > 0) {
+                color = pickleStore.$state.solution[0][x]
                 number++
             }
 
-            for(let y = 1; y < props.showPickle.solution.length; y++) {
-                if(props.showPickle.solution[y][x] > 0 && props.showPickle.solution[y][x] == props.showPickle.solution[y-1][x]) {
+            for(let y = 1; y < pickleStore.$state.solution.length; y++) {
+                if(pickleStore.$state.solution[y][x] > 0 && pickleStore.$state.solution[y][x] == pickleStore.$state.solution[y-1][x]) {
                     number++
-                    color = props.showPickle.solution[y][x]
-                } else if(props.showPickle.solution[y][x] > 0) {
+                    color = pickleStore.$state.solution[y][x]
+                } else if(pickleStore.$state.solution[y][x] > 0) {
                     if(color > 0) colNumbers.push({ 'color': color, 'number': number })
                     number = 1
-                    color = props.showPickle.solution[y][x]
+                    color = pickleStore.$state.solution[y][x]
                 }
             }
             if(color > 0) colNumbers.push({color, number})
@@ -234,30 +235,20 @@
     .matrix__solution .matrix__cell:hover {
         cursor: pointer;
     }
-    .matrix__solution .matrix__cell[attr-color='0'],
-    .cursorNumber[attr-color='0'] { 
+    .matrix__solution .matrix__cell[attr-color='0'] { 
         background: linear-gradient(-45deg, transparent calc(50% - 0.5px), var(--color-border-primary) calc(50% - 0.5px), var(--color-border-primary) calc(50% + 0.5px), transparent calc(50% + 0.5px)) 4px / calc(100% - 8px) no-repeat,
                     linear-gradient(45deg, transparent calc(50% - 0.5px), var(--color-border-primary) calc(50% - 0.5px), var(--color-border-primary) calc(50% + 0.5px), transparent calc(50% + 0.5px)) 4px / calc(100% - 8px) no-repeat,
                     var(--color-bg-primary);
     }
-    .matrix__solution .matrix__cell[attr-color='1'],
-    .cursorNumber[attr-color='1'] { background-color: var(--color-1); }
-    .matrix__solution .matrix__cell[attr-color='2'],
-    .cursorNumber[attr-color='2'] { background-color: var(--color-2); }
-    .matrix__solution .matrix__cell[attr-color='3'],
-    .cursorNumber[attr-color='3'] { background-color: var(--color-3); }
-    .matrix__solution .matrix__cell[attr-color='4'],
-    .cursorNumber[attr-color='4'] { background-color: var(--color-4); }
-    .matrix__solution .matrix__cell[attr-color='5'],
-    .cursorNumber[attr-color='5'] { background-color: var(--color-5); }
-    .matrix__solution .matrix__cell[attr-color='6'],
-    .cursorNumber[attr-color='5'] { background-color: var(--color-6); }
-    .matrix__solution .matrix__cell[attr-color='7'],
-    .cursorNumber[attr-color='6'] { background-color: var(--color-7); }
-    .matrix__solution .matrix__cell[attr-color='8'],
-    .cursorNumber[attr-color='7'] { background-color: var(--color-8); }
-    .matrix__solution .matrix__cell[attr-color='9'],
-    .cursorNumber[attr-color='9'] { background-color: var(--color-9); }
+    .matrix__solution .matrix__cell[attr-color='1'] { background-color: var(--color-1); }
+    .matrix__solution .matrix__cell[attr-color='2'] { background-color: var(--color-2); }
+    .matrix__solution .matrix__cell[attr-color='3'] { background-color: var(--color-3); }
+    .matrix__solution .matrix__cell[attr-color='4'] { background-color: var(--color-4); }
+    .matrix__solution .matrix__cell[attr-color='5'] { background-color: var(--color-5); }
+    .matrix__solution .matrix__cell[attr-color='6'] { background-color: var(--color-6); }
+    .matrix__solution .matrix__cell[attr-color='7'] { background-color: var(--color-7); }
+    .matrix__solution .matrix__cell[attr-color='8'] { background-color: var(--color-8); }
+    .matrix__solution .matrix__cell[attr-color='9'] { background-color: var(--color-9); }
 
     /* vertical lines */
     .matrix__topNumbers .matrix__cell:not(:last-child):not(:nth-child(5n)),

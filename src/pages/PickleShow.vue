@@ -1,39 +1,58 @@
 <template>
     <!-- color pickle -->
-    <main v-if="showPickle.color" class="picklePage" :style="{ '--cellSize': cellSize + 'px',
-                                       '--color-1': showPickle.colors[0],
-                                       '--color-2': showPickle.colors[1],
-                                       '--color-3': showPickle.colors[2],
-                                       '--color-4': showPickle.colors[3],
-                                       '--color-5': showPickle.colors[4],
-                                       '--color-6': showPickle.colors[5],
-                                       '--color-7': showPickle.colors[6],
-                                       '--color-8': showPickle.colors[7],
-                                       '--color-9': showPickle.colors[8] }">
-        <pickle-header :showPickle="showPickle" />
-        <pickle-matrix :showPickle="showPickle" />
+    <main v-if="pickleStore.$state.color" class="picklePage" :style="{ '--cellSize': cellSize + 'px',
+                                    '--color-1': pickleStore.$state.colors[0],
+                                    '--color-2': pickleStore.$state.colors[1],
+                                    '--color-3': pickleStore.$state.colors[2],
+                                    '--color-4': pickleStore.$state.colors[3],
+                                    '--color-5': pickleStore.$state.colors[4],
+                                    '--color-6': pickleStore.$state.colors[5],
+                                    '--color-7': pickleStore.$state.colors[6],
+                                    '--color-8': pickleStore.$state.colors[7],
+                                    '--color-9': pickleStore.$state.colors[8] }">
+        <pickle-header />
+        <pickle-matrix  />
+        
+        <div class="cursorNumber" :attr-color="pickleStore.$state.colorChecked" :style="{ 'transform': `translate(${x + 15}px, ${y + 15}px)` }"></div>
     </main>
 
     <!-- b&w pickle -->
-    <main v-if="!showPickle.color" class="picklePage" :style="{ '--cellSize': cellSize + 'px' }">
-        <pickle-header :showPickle="showPickle" />
-        <pickle-matrix :showPickle="showPickle" />
+    <main v-else class="picklePage" :style="{ '--cellSize': cellSize + 'px' }">
+        <pickle-header />
+        <pickle-matrix />
     </main>
 </template>
 
 <script setup>
     import data from '../../mock-db.json'
-    
-    import { computed, ref } from 'vue'
-    import { useRoute } from 'vue-router';
+
+    import { useAttrs, ref, watch } from 'vue'
+    import { useMouse, useMagicKeys } from '@vueuse/core'
+
+    import { usePickleStore } from '@/stores/PickleStore'
     import PickleHeader from '@/components/PickleHeader'
     import PickleMatrix from '@/components/PickleMatrix'
-
-    const route = useRoute()
+    
+    const pickleStore = usePickleStore()
+    const attrs = useAttrs()
     const cellSize = ref(20)
+    const { Digit1, Digit2, Digit3, Digit4, Digit5, Digit6, Digit7, Digit8, Digit9 } = useMagicKeys()
+    const { x, y } = useMouse({ touch: false })
 
-    const showPickle = computed(() => {
-        return data.pickles.find(pickle => pickle.id === parseInt(route.params.id))
+    pickleStore.fill(data.pickles.find(pickle => pickle.id === parseInt(attrs.id)))
+
+    watch([Digit1, Digit2, Digit3, Digit4, Digit5, Digit6, Digit7, Digit8, Digit9],
+        ([key1, key2, key3, key4, key5, key6, key7, key8, key9]) => {
+        
+        if(key1 && pickleStore.$state.colors[0]) pickleStore.$state.colorChecked = 1
+        else if(key2 && pickleStore.$state.colors[1]) pickleStore.$state.colorChecked = 2
+        else if(key3 && pickleStore.$state.colors[2]) pickleStore.$state.colorChecked = 3
+        else if(key4 && pickleStore.$state.colors[3]) pickleStore.$state.colorChecked = 4
+        else if(key5 && pickleStore.$state.colors[4]) pickleStore.$state.colorChecked = 5
+        else if(key6 && pickleStore.$state.colors[5]) pickleStore.$state.colorChecked = 6
+        else if(key7 && pickleStore.$state.colors[6]) pickleStore.$state.colorChecked = 7
+        else if(key8 && pickleStore.$state.colors[7]) pickleStore.$state.colorChecked = 8
+        else if(key9 && pickleStore.$state.colors[8]) pickleStore.$state.colorChecked = 9
     })
 </script>
 
@@ -59,4 +78,18 @@
         border: 1px solid var(--color-bg-cell-primary);
         z-index: 1;
     }
+    .cursorNumber[attr-color='0'] { 
+        background: linear-gradient(-45deg, transparent calc(50% - 0.5px), var(--color-border-primary) calc(50% - 0.5px), var(--color-border-primary) calc(50% + 0.5px), transparent calc(50% + 0.5px)) 4px / calc(100% - 8px) no-repeat,
+                    linear-gradient(45deg, transparent calc(50% - 0.5px), var(--color-border-primary) calc(50% - 0.5px), var(--color-border-primary) calc(50% + 0.5px), transparent calc(50% + 0.5px)) 4px / calc(100% - 8px) no-repeat,
+                    var(--color-bg-primary);
+    }
+    .cursorNumber[attr-color='1'] { background-color: var(--color-1); }
+    .cursorNumber[attr-color='2'] { background-color: var(--color-2); }
+    .cursorNumber[attr-color='3'] { background-color: var(--color-3); }
+    .cursorNumber[attr-color='4'] { background-color: var(--color-4); }
+    .cursorNumber[attr-color='5'] { background-color: var(--color-5); }
+    .cursorNumber[attr-color='6'] { background-color: var(--color-6); }
+    .cursorNumber[attr-color='7'] { background-color: var(--color-7); }
+    .cursorNumber[attr-color='8'] { background-color: var(--color-8); }
+    .cursorNumber[attr-color='9'] { background-color: var(--color-9); }
 </style>

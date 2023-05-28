@@ -6,24 +6,25 @@
             <component-button view="clear" iconOnly>
                 <icon-back size="m" />
             </component-button>
-            <h3 class="text text_size-m text_view-primary text_weight-bold picklePreview__name">#{{ props.showPickle.id }}</h3>
-            <div v-if="props.showPickle.difficulty == '1'" class="text text_size_s text_view-easy">easy-peasy</div>
-            <div v-else-if="props.showPickle.difficulty == '2'" class="text text_size_s text_view-easy">easy</div>
-            <div v-else-if="props.showPickle.difficulty == '3'" class="text text_size_s text_view-medium">medium</div>
-            <div v-else-if="props.showPickle.difficulty == '4'" class="text text_size_s text_view-hard">hard</div>
-            <div v-else-if="props.showPickle.difficulty >= '5'" class="text text_size_s text_view-hard">really hard</div>
+            <h3 class="text text_size-m text_view-primary text_weight-bold picklePreview__name">#{{ pickleStore.$state.id }}</h3>
+            <div v-if="pickleStore.$state.difficulty == '1'" class="text text_size_s text_view-easy">easy-peasy</div>
+            <div v-else-if="pickleStore.$state.difficulty == '2'" class="text text_size_s text_view-easy">easy</div>
+            <div v-else-if="pickleStore.$state.difficulty == '3'" class="text text_size_s text_view-medium">medium</div>
+            <div v-else-if="pickleStore.$state.difficulty == '4'" class="text text_size_s text_view-hard">hard</div>
+            <div v-else-if="pickleStore.$state.difficulty >= '5'" class="text text_size_s text_view-hard">really hard</div>
         </div>
 
         <!-- color palette for color pickle -->
-        <fieldset v-if="props.showPickle.color" class="picklePage__centerHeaderPart">
-            <label v-for="(item, i) in props.showPickle.colors" :key="i" class="color" :for="'color' + (i + 1)">
-                <input type="radio" :value="i+1" name="color" :id="'color' + (i + 1)" v-bind:checked="i === 0" />
+        <fieldset v-if="pickleStore.$state.color" class="picklePage__centerHeaderPart">
+            <label v-for="(item, i) in pickleStore.$state.colors" :key="i" class="color" :for="'color' + (i + 1)">
+                <input type="radio" :value="i+1" name="color" :id="'color' + (i + 1)" v-model="pickleStore.$state.colorChecked" v-bind:checked="i === 0" />
             </label>
             <div class="colorSkip"></div>
             <p class="text text_size_s text_view_primary"> — shift + click</p>
         </fieldset>
+
         <!-- color palette for b&w pickle -->
-        <fieldset v-if="!props.showPickle.color" class="picklePage__centerHeaderPart">
+        <fieldset v-if="!pickleStore.$state.color" class="picklePage__centerHeaderPart">
             <div class="colorChecked"></div>
             <p class="text text_size_s text_view_primary"> — click</p>
             <div class="colorSkip"></div>
@@ -58,8 +59,7 @@
 </template>
 
 <script setup>
-    import { defineProps } from 'vue';
-    
+    import { usePickleStore } from '@/stores/PickleStore'
     import IconBack from '@/components/icons/IconBack'
     import IconPlus from '@/components/icons/IconPlus'
     import IconMinus from '@/components/icons/IconMinus'
@@ -67,7 +67,7 @@
     import IconRedo from '@/components/icons/IconRedo'
     import IconRestart from '@/components/icons/IconRestart'
     
-    const props = defineProps({ showPickle: {}})
+    const pickleStore = usePickleStore()
 </script>
 
 <style scoped>
