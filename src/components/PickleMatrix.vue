@@ -28,9 +28,9 @@
                     </div>
                 </div>
             </div>
-            <div class="matrix__solution">
+            <div class="matrix__solution" @mousedown="(event) => event.preventDefault()">
                 <div class="matrix__row" v-for="(row, itemY) in pickleStore.$state.solution" :key="row[0].y">
-                    <div class="matrix__cell" v-for="(item, itemX) in row" :key="item.x" :attr-x="itemX" :attr-y="itemY"></div>
+                    <div class="matrix__cell" v-for="(item, itemX) in row" :key="item.x" :attr-x="itemX" :attr-y="itemY" attr-color="" @mousedown="mouseDown(itemX, itemY)" @mouseup="mouseUp(itemX, itemY)" @mouseenter="manageLine(itemX, itemY)"></div>
                 </div>
             </div>
             <div class="matrix__rightNumbers">
@@ -48,11 +48,21 @@
 </template>
 
 <script setup>
-    import { computed } from 'vue'
+    import { computed, ref, watch } from 'vue'
+    import { useMousePressed } from '@vueuse/core'
 
     import { usePickleStore } from '@/stores/PickleStore'
     
+    const { pressed } = useMousePressed()
     const pickleStore = usePickleStore()
+    const isPressed = ref(false)
+    const line = ref({
+        color: null,
+        startPointX: null,
+        startPointY: null,
+        endPointX: null,
+        endPointY: null
+    })
 
     const leftNumbers = computed(() => {
         let leftNumbers = []
@@ -134,6 +144,90 @@
         }))
 
         return topNumbers
+    })
+
+    const updateTheMatrix = () => {
+        const startPointX = line.value.startPointX > line.value.endPointX ? line.value.endPointX : line.value.startPointX
+        const startPointY = line.value.startPointY > line.value.endPointY ? line.value.endPointY : line.value.startPointY
+        const endPointX = line.value.startPointX < line.value.endPointX ? line.value.endPointX : line.value.startPointX
+        const endPointY = line.value.startPointY < line.value.endPointY ? line.value.endPointY : line.value.startPointY
+        
+        for(let y = startPointY; y <= endPointY; y++)
+            for(let x = startPointX; x <= endPointX; x++)
+                pickleStore.$state.matrix[y][x] = line.value.color
+    }
+
+    const drawTheLine = () => {
+        const startPointX = line.value.startPointX > line.value.endPointX ? line.value.endPointX : line.value.startPointX
+        const startPointY = line.value.startPointY > line.value.endPointY ? line.value.endPointY : line.value.startPointY
+        const endPointX = line.value.startPointX < line.value.endPointX ? line.value.endPointX : line.value.startPointX
+        const endPointY = line.value.startPointY < line.value.endPointY ? line.value.endPointY : line.value.startPointY
+        
+        for(let y = startPointY; y <= endPointY; y++)
+            for(let x = startPointX; x <= endPointX; x++)
+                document.querySelector(`.matrix__solution .matrix__cell[attr-x="${x}"][attr-y="${y}"]`).setAttribute('attr-color', line.value.color)
+    }
+    
+    const undrawTheLine = () => {
+        const startPointX = line.value.startPointX > line.value.endPointX ? line.value.endPointX : line.value.startPointX
+        const startPointY = line.value.startPointY > line.value.endPointY ? line.value.endPointY : line.value.startPointY
+        const endPointX = line.value.startPointX < line.value.endPointX ? line.value.endPointX : line.value.startPointX
+        const endPointY = line.value.startPointY < line.value.endPointY ? line.value.endPointY : line.value.startPointY
+        
+        for(let y = startPointY; y <= endPointY; y++)
+            for(let x = startPointX; x <= endPointX; x++)
+                document.querySelector(`.matrix__solution .matrix__cell[attr-x="${x}"][attr-y="${y}"]`).setAttribute('attr-color', pickleStore.$state.matrix[y][x])
+    }
+    
+    const manageLine = (x, y) => {
+        if (isPressed.value && line.value.startPointX !== null) {
+            // undraw the line
+            undrawTheLine()
+
+            if(pickleStore.$state.colorChecked === pickleStore.$state.matrix[line.value.startPointY][line.value.startPointX])
+                line.value.color = ''
+            else line.value.color = pickleStore.$state.colorChecked
+
+            line.value.endPointX = x
+            line.value.endPointY = y
+
+            // draw the line
+            drawTheLine()
+        }
+    }
+    
+    const mouseUp = (x, y) => {
+        if(line.value.startPointX !== null) {
+            line.value.endPointX = x
+            line.value.endPointY = y
+            updateTheMatrix()
+
+            line.value.startPointX = null
+            line.value.startPointY = null
+            line.value.endPointX = null
+            line.value.endPointY = null
+            line.value.color = null
+        }
+    }
+    
+    const mouseDown = (x, y) => {
+        if(line.value.startPointX === null) {
+            line.value.startPointX = x
+            line.value.startPointY = y
+            line.value.endPointX = x
+            line.value.endPointY = y
+            
+            if(pickleStore.$state.colorChecked === pickleStore.$state.matrix[y][x])
+                line.value.color = ''
+            else line.value.color = pickleStore.$state.colorChecked
+            
+            // draw the line
+            drawTheLine()
+        }
+    }
+
+    watch(pressed, (v) => {
+        isPressed.value = v
     })
 </script>
 
@@ -240,7 +334,7 @@
                     linear-gradient(45deg, transparent calc(50% - 0.5px), var(--color-border-primary) calc(50% - 0.5px), var(--color-border-primary) calc(50% + 0.5px), transparent calc(50% + 0.5px)) 4px / calc(100% - 8px) no-repeat,
                     var(--color-bg-primary);
     }
-    .matrix__solution .matrix__cell[attr-color='1'] { background-color: var(--color-1); }
+    .matrix__solution .matrix__cell[attr-color='1'] { background-color: var(--color-1, var(--color-bg-cell-checked)); }
     .matrix__solution .matrix__cell[attr-color='2'] { background-color: var(--color-2); }
     .matrix__solution .matrix__cell[attr-color='3'] { background-color: var(--color-3); }
     .matrix__solution .matrix__cell[attr-color='4'] { background-color: var(--color-4); }

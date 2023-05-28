@@ -26,7 +26,7 @@
 <script setup>
     import data from '../../mock-db.json'
 
-    import { useAttrs, watch } from 'vue'
+    import { useAttrs, watch, ref } from 'vue'
     import { useMouse, useMagicKeys } from '@vueuse/core'
 
     import { usePickleStore } from '@/stores/PickleStore'
@@ -35,7 +35,15 @@
     
     const pickleStore = usePickleStore()
     const attrs = useAttrs()
-    const { Digit1, Digit2, Digit3, Digit4, Digit5, Digit6, Digit7, Digit8, Digit9 } = useMagicKeys()
+    const backupColor = ref(1)
+    const { Digit1, Digit2, Digit3, Digit4, Digit5, Digit6, Digit7, Digit8, Digit9 } = useMagicKeys({
+        onEventFired(e) {
+            if(pickleStore.$state.colorChecked > 0) backupColor.value = pickleStore.$state.colorChecked
+            if (e.key === 'Shift' && e.type === 'keydown') 
+                pickleStore.$state.colorChecked = 0
+            else if(backupColor.value > 0) pickleStore.$state.colorChecked = backupColor.value
+        }
+    })
     const { x, y } = useMouse({ touch: false })
 
     pickleStore.fill(data.pickles.find(pickle => pickle.id === parseInt(attrs.id)))
@@ -61,7 +69,7 @@
         display: grid;
         grid-template-rows: 60px calc(100vh - 60px);
     }
-    
+
     .cursorNumber {
         position: absolute;
         min-width: 20px; height: 20px;
