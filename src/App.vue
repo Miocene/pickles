@@ -24,8 +24,8 @@
         --color-component-primary-text: #141414;
         --color-component-primary-hover-text: #141414;
         
-        --color-border-primary: rgb(255 255 255 / .5);
-        --color-border-secondary: rgb(255 255 255 / .2);
+        --color-border-primary: #8A8A8A;
+        --color-border-secondary: #434343;
         
         --color-text-primary: #FFFFFF;
         --color-text-secondary: rgb(255 255 255 / .5);

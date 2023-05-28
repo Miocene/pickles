@@ -184,7 +184,7 @@
             // undraw the line
             undrawTheLine()
 
-            if(pickleStore.$state.colorChecked === pickleStore.$state.matrix[line.value.startPointY][line.value.startPointX])
+            if(pickleStore.$state.colorChecked === pickleStore.$state.matrix[line.value.startPointY][line.value.startPointX] || pickleStore.$state.matrix[line.value.startPointY][line.value.startPointX] === 0)
                 line.value.color = ''
             else line.value.color = pickleStore.$state.colorChecked
 
@@ -217,7 +217,7 @@
             line.value.endPointX = x
             line.value.endPointY = y
             
-            if(pickleStore.$state.colorChecked === pickleStore.$state.matrix[y][x])
+            if(pickleStore.$state.colorChecked === pickleStore.$state.matrix[y][x] || pickleStore.$state.matrix[y][x] === 0)
                 line.value.color = ''
             else line.value.color = pickleStore.$state.colorChecked
             
