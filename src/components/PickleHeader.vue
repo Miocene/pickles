@@ -35,10 +35,10 @@
 
         <div class="picklePage__rightHeaderPart">
             <div class="buttonGroup">
-                <component-button view="clear" iconOnly>
+                <component-button view="clear" iconOnly @click="decreaseCellSize">
                     <icon-minus size="m" />
                 </component-button>
-                <component-button view="clear" iconOnly>
+                <component-button view="clear" iconOnly @click="increaseCellSize">
                     <icon-plus size="m" />
                 </component-button>
             </div>
@@ -68,6 +68,13 @@
     import IconRestart from '@/components/icons/IconRestart'
     
     const pickleStore = usePickleStore()
+
+    const increaseCellSize = () => {
+        if(pickleStore.$state.cellSize < 34) pickleStore.$state.cellSize = pickleStore.$state.cellSize + 2
+    }
+    const decreaseCellSize = () => {
+        if(pickleStore.$state.cellSize > 16) pickleStore.$state.cellSize = pickleStore.$state.cellSize - 2
+    }
 </script>
 
 <style scoped>

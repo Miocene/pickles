@@ -1,6 +1,6 @@
 <template>
     <!-- color pickle -->
-    <main v-if="pickleStore.$state.color" class="picklePage" :style="{ '--cellSize': cellSize + 'px',
+    <main v-if="pickleStore.$state.color" class="picklePage" :style="{ '--cellSize': pickleStore.$state.cellSize + 'px',
                                     '--color-1': pickleStore.$state.colors[0],
                                     '--color-2': pickleStore.$state.colors[1],
                                     '--color-3': pickleStore.$state.colors[2],
@@ -17,7 +17,7 @@
     </main>
 
     <!-- b&w pickle -->
-    <main v-else class="picklePage" :style="{ '--cellSize': cellSize + 'px' }">
+    <main v-else class="picklePage" :style="{ '--cellSize': pickleStore.$state.cellSize + 'px' }">
         <pickle-header />
         <pickle-matrix />
     </main>
@@ -26,7 +26,7 @@
 <script setup>
     import data from '../../mock-db.json'
 
-    import { useAttrs, ref, watch } from 'vue'
+    import { useAttrs, watch } from 'vue'
     import { useMouse, useMagicKeys } from '@vueuse/core'
 
     import { usePickleStore } from '@/stores/PickleStore'
@@ -35,7 +35,6 @@
     
     const pickleStore = usePickleStore()
     const attrs = useAttrs()
-    const cellSize = ref(20)
     const { Digit1, Digit2, Digit3, Digit4, Digit5, Digit6, Digit7, Digit8, Digit9 } = useMagicKeys()
     const { x, y } = useMouse({ touch: false })
 

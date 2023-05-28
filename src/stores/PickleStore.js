@@ -14,7 +14,8 @@ export const usePickleStore = defineStore("PickleStore", {
             published: Boolean,
             solution: [],
             matrix: [],
-            colorChecked: 1
+            colorChecked: 1,
+            cellSize: 20
         }
     },
     actions: {
