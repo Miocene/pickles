@@ -10,6 +10,7 @@
     .theme-dark {
         --color-bg-primary: #141414;
         --color-bg-secondary: #1c1c1c;
+        --color-bg-cell-checked: rgb(255 255 255 / 1);
         --color-bg-cell-primary: rgb(255 255 255 / .2);
         --color-bg-cell-secondary: rgb(255 255 255 / .1);
         
