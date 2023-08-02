@@ -20,6 +20,7 @@
         justify-content: center;
         align-items: center;
         height: var(--size-control);
+        padding: 0 var(--space-s);
         border: 0;
         border-radius: 99em;
         transition: background-color 0.25s ease;
@@ -39,5 +40,6 @@
     }
     .button_iconOnly {
         width: var(--size-control);
+        padding: 0;
     }
 </style>

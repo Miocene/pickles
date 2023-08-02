@@ -184,4 +184,32 @@
     .user img {
         width: 100%;
     }
+
+    .choiceGroup {
+        display: flex;
+        align-items: center;
+        padding: 0;
+        margin: 0;
+        border: 0;
+    }
+    .choiceGroup_input {
+        position: absolute;
+        top: -100%; left: -100%;
+        visibility: hidden;
+    }
+    .choiceGroup_item {
+        position: relative;
+        height: var(--size-control);
+        padding: 0 var(--space-m);
+        line-height: var(--size-control);
+        color: var(--color-component-clear-text);
+        border-radius: 99em;
+        background-color: var(--color-component-clear-bg);
+        cursor: pointer;
+        transition: background-color 0.25s ease, color 0.25s ease;
+    }
+    .choiceGroup_item:hover, .choiceGroup_item:has(.choiceGroup_input:checked) {
+        color: var(--color-component-clear-hover-text);
+        background-color: var(--color-component-clear-hover-bg);
+    }
 </style>

@@ -30,7 +30,7 @@
             </div>
             <div class="matrix__solution" @mousedown="(event) => event.preventDefault()">
                 <div class="matrix__row" v-for="(row, itemY) in pickleStore.$state.solution" :key="row[0].y">
-                    <div class="matrix__cell" v-for="(item, itemX) in row" :key="item.x" :attr-x="itemX" :attr-y="itemY" attr-color="" @mousedown="mouseDown(itemX, itemY)" @mouseup="mouseUp(itemX, itemY)" @mouseenter="manageLine(itemX, itemY)"></div>
+                    <div class="matrix__cell" v-for="(item, itemX) in row" :key="item.x" :attr-x="itemX" :attr-y="itemY" :attr-color="pickleStore.$state.adminMode ? item : ''" @mousedown="mouseDown(itemX, itemY)" @mouseup="mouseUp(itemX, itemY)" @mouseenter="manageLine(itemX, itemY)"></div>
                 </div>
             </div>
             <div class="matrix__rightNumbers">
@@ -334,15 +334,16 @@
                     linear-gradient(45deg, transparent calc(50% - 0.5px), var(--color-border-primary) calc(50% - 0.5px), var(--color-border-primary) calc(50% + 0.5px), transparent calc(50% + 0.5px)) 4px / calc(100% - 8px) no-repeat,
                     var(--color-bg-primary);
     }
+    .matrix__cell[attr-color='1'] { background-color: var(--color-1); }
     .matrix__solution .matrix__cell[attr-color='1'] { background-color: var(--color-1, var(--color-bg-cell-checked)); }
-    .matrix__solution .matrix__cell[attr-color='2'] { background-color: var(--color-2); }
-    .matrix__solution .matrix__cell[attr-color='3'] { background-color: var(--color-3); }
-    .matrix__solution .matrix__cell[attr-color='4'] { background-color: var(--color-4); }
-    .matrix__solution .matrix__cell[attr-color='5'] { background-color: var(--color-5); }
-    .matrix__solution .matrix__cell[attr-color='6'] { background-color: var(--color-6); }
-    .matrix__solution .matrix__cell[attr-color='7'] { background-color: var(--color-7); }
-    .matrix__solution .matrix__cell[attr-color='8'] { background-color: var(--color-8); }
-    .matrix__solution .matrix__cell[attr-color='9'] { background-color: var(--color-9); }
+    .matrix__cell[attr-color='2'] { background-color: var(--color-2); }
+    .matrix__cell[attr-color='3'] { background-color: var(--color-3); }
+    .matrix__cell[attr-color='4'] { background-color: var(--color-4); }
+    .matrix__cell[attr-color='5'] { background-color: var(--color-5); }
+    .matrix__cell[attr-color='6'] { background-color: var(--color-6); }
+    .matrix__cell[attr-color='7'] { background-color: var(--color-7); }
+    .matrix__cell[attr-color='8'] { background-color: var(--color-8); }
+    .matrix__cell[attr-color='9'] { background-color: var(--color-9); }
 
     /* vertical lines */
     .matrix__topNumbers .matrix__cell:not(:last-child):not(:nth-child(5n)),

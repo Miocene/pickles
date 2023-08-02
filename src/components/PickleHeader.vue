@@ -1,5 +1,73 @@
 <template>
-    <header class="picklePage__header">
+    <header v-if="pickleStore.$state.adminMode" class="picklePage__header">
+
+        <!-- pickle info -->
+        <div class="picklePage__leftHeaderPart">
+            <fieldset class="choiceGroup">
+                <label class="choiceGroup_item" for="difficulty1">
+                    <input class="choiceGroup_input" type="radio" id="difficulty1" :value="1" name="difficulty" v-model="pickleStore.$state.difficulty" />
+                    1
+                </label>
+
+                <label class="choiceGroup_item" for="difficulty2">
+                    <input class="choiceGroup_input" type="radio" id="difficulty2" :value="2" name="difficulty" v-model="pickleStore.$state.difficulty" />
+                    2
+                </label>
+
+                <label class="choiceGroup_item" for="difficulty3">
+                    <input class="choiceGroup_input" type="radio" id="difficulty3" :value="3" name="difficulty" v-model="pickleStore.$state.difficulty" />
+                    3
+                </label>
+                
+                <label class="choiceGroup_item" for="difficulty4">
+                    <input class="choiceGroup_input" type="radio" id="difficulty4" :value="4" name="difficulty" v-model="pickleStore.$state.difficulty" />
+                    4
+                </label>
+                
+                <label class="choiceGroup_item" for="difficulty5">
+                    <input class="choiceGroup_input" type="radio" id="difficulty5" :value="5" name="difficulty" v-model="pickleStore.$state.difficulty" />
+                    5
+                </label>
+            </fieldset>
+
+            <h3 class="text text_size-m text_view-primary text_weight-bold picklePreview__name">#{{ pickleStore.$state.id }}</h3>
+        </div>
+
+        <!-- color palette for color pickle -->
+        <fieldset v-if="pickleStore.$state.color" class="picklePage__centerHeaderPart">
+            <label v-for="(item, i) in pickleStore.$state.colors" :key="i" class="color" :for="'color' + (i + 1)">
+                <input type="radio" :value="i+1" name="color" :id="'color' + (i + 1)" v-model="pickleStore.$state.colorChecked" v-bind:checked="i === 0" />
+            </label>
+            <div class="colorSkip"></div>
+            <p class="text text_size_s text_view_primary"> — shift + click</p>
+        </fieldset>
+
+        <!-- color palette for b&w pickle -->
+        <fieldset v-if="!pickleStore.$state.color" class="picklePage__centerHeaderPart">
+            <div class="colorChecked"></div>
+            <p class="text text_size_s text_view_primary"> — click</p>
+            <div class="colorSkip"></div>
+            <p class="text text_size_s text_view_primary"> — shift + click</p>
+        </fieldset>
+
+
+
+        <div class="picklePage__rightHeaderPart">
+            <component-button v-if="userStore.$state.admin" view="clear" iconOnly @click="pickleStore.$state.adminMode = false; pickleStore.$onAction.clearMatrix">
+                <icon-check size="m" />
+            </component-button>
+            <div class="buttonGroup">
+                <component-button view="clear" iconOnly @click="decreaseCellSize">
+                    <icon-minus size="m" />
+                </component-button>
+                <component-button view="clear" iconOnly @click="increaseCellSize">
+                    <icon-plus size="m" />
+                </component-button>
+            </div>
+        </div>
+    </header>
+
+    <header v-else class="picklePage__header">
 
         <!-- pickle info -->
         <div class="picklePage__leftHeaderPart">
@@ -34,7 +102,7 @@
 
 
         <div class="picklePage__rightHeaderPart">
-            <component-button v-if="userStore.$state.admin" view="clear" iconOnly>
+            <component-button v-if="userStore.$state.admin" view="clear" iconOnly @click="pickleStore.$state.adminMode = true; pickleStore.$state.matrix = pickleStore.$state.solution">
                 <icon-edit size="m" />
             </component-button>
             <div class="buttonGroup">
@@ -73,6 +141,7 @@
     import IconRedo from '@/components/icons/IconRedo'
     import IconRestart from '@/components/icons/IconRestart'
     import IconEdit from '@/components/icons/IconEdit'
+    import IconCheck from '@/components/icons/IconCheck'
     
     const pickleStore = usePickleStore()
     const userStore = useUserStore()
