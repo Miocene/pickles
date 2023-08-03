@@ -525,16 +525,12 @@
         let xCells = Math.abs(line.value.startPointX - line.value.endPointX)
         let yCells = Math.abs(line.value.startPointY - line.value.endPointY)
         
-        console.log('xCells: ' + xCells)
-        console.log('yCells: ' + yCells)
         if(xCells != 0 && yCells == 0)
             pickleStore.$state.checkedCells = xCells + 1
         else if(xCells == 0 && yCells != 0)
             pickleStore.$state.checkedCells = yCells + 1
         else if(xCells != 0 && yCells != 0)
             pickleStore.$state.checkedCells = (xCells + 1) + '×' + (yCells + 1)
-
-        console.log(pickleStore.$state.checkedCells)
     }
     
     const undrawTheLine = () => {

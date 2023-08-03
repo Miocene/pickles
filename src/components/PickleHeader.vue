@@ -117,7 +117,7 @@
                 <component-button view="clear" iconOnly>
                     <icon-undo size="m" />
                 </component-button>
-                <component-button view="clear" iconOnly>
+                <component-button view="clear" iconOnly @click="restartPickle()">
                     <icon-restart size="m" />
                 </component-button>
                 <component-button view="clear" iconOnly>
@@ -162,8 +162,25 @@
     const increaseCellSize = () => {
         if(pickleStore.$state.cellSize < 34) pickleStore.$state.cellSize = pickleStore.$state.cellSize + 2
     }
+
     const decreaseCellSize = () => {
         if(pickleStore.$state.cellSize > 16) pickleStore.$state.cellSize = pickleStore.$state.cellSize - 2
+    }
+
+    const restartPickle = () => {
+        console.log('sss')
+        pickleStore.$state.matrix = [...Array(pickleStore.$state.solution.length)].map(() => [...Array(pickleStore.$state.solution[0].length)].map(() => ''))
+        const cells = document.querySelectorAll('.matrix__solution .matrix__cell')
+        const numbers = document.querySelectorAll('.matrix__cell-checked')
+
+        cells.forEach(cell => {
+            cell.setAttribute('attr-color', '')
+        })
+        numbers.forEach(cell => {
+            cell.classList.remove('matrix__cell-checked')
+        })
+
+        pickleStore.$state.progress = 0
     }
 </script>
 
