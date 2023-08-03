@@ -56,6 +56,7 @@
 
 <script setup>
     import { reactive, ref, watch } from 'vue'
+    // import { useStorage } from '@vueuse/core'
     
     import ComponentHeader from '@/components/ComponentHeader'
     import ComponentPicklePreview from '@/components/ComponentPicklePreview'
@@ -72,13 +73,17 @@
     
     const usersPickles = reactive(picklesStore.pickles.filter(pickle => pickle.published == true))
     let pickles = usersPickles
-    const checkedDifficulty = ref([])
-    const checkedType = ref([])
 
-    watch([checkedDifficulty, checkedType], ([newDifficulty, newType]) => {
-        const type = newType || checkedType
-        const difficulty = newDifficulty || checkedDifficulty
+    const checkedDifficulty = ref(localStorage.getItem('difficulty') || 'all')
+    const checkedType = ref(localStorage.getItem('type') || 'all')
+    
+    const filterPickleList = (checkedDifficulty, checkedType, newDifficulty, newType) => {
+        let difficulty = newDifficulty || checkedDifficulty || localStorage.getItem('difficulty') || 'all'
+        let type = newType || checkedType || localStorage.getItem('type') || 'all'
+        
         pickles = usersPickles
+        localStorage.setItem('difficulty', difficulty)
+        localStorage.setItem('type', type)
 
         if(difficulty === 'easy') pickles = reactive(pickles.filter(pickle => pickle.difficulty < 3))
         else if(difficulty === 'medium') pickles = reactive(pickles.filter(pickle => pickle.difficulty == 3))
@@ -86,7 +91,13 @@
 
         if(type === 'color') pickles = reactive(pickles.filter(pickle => pickle.color == true))
         else if(type === 'bw') pickles = reactive(pickles.filter(pickle => pickle.color == false))
+    }
+
+    watch([checkedDifficulty, checkedType], ([newDifficulty, newType]) => {
+        filterPickleList(checkedDifficulty, checkedType, newDifficulty, newType)
     })
+
+    filterPickleList()
 </script>
 
 <style scoped>
