@@ -520,6 +520,21 @@
         for(let y = startPointY; y <= endPointY; y++)
             for(let x = startPointX; x <= endPointX; x++)
                 document.querySelector(`.matrix__solution .matrix__cell[attr-x="${x}"][attr-y="${y}"]`).setAttribute('attr-color', line.value.color)
+
+        // show the number of colored cells
+        let xCells = Math.abs(line.value.startPointX - line.value.endPointX)
+        let yCells = Math.abs(line.value.startPointY - line.value.endPointY)
+        
+        console.log('xCells: ' + xCells)
+        console.log('yCells: ' + yCells)
+        if(xCells != 0 && yCells == 0)
+            pickleStore.$state.checkedCells = xCells + 1
+        else if(xCells == 0 && yCells != 0)
+            pickleStore.$state.checkedCells = yCells + 1
+        else if(xCells != 0 && yCells != 0)
+            pickleStore.$state.checkedCells = (xCells + 1) + '×' + (yCells + 1)
+
+        console.log(pickleStore.$state.checkedCells)
     }
     
     const undrawTheLine = () => {
@@ -565,6 +580,8 @@
             line.value.endPointX = null
             line.value.endPointY = null
             line.value.color = null
+
+            pickleStore.$state.checkedCells = 0
         }
     }
     

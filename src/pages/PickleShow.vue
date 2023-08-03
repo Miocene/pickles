@@ -1,27 +1,33 @@
 <template>
-    <!-- color pickle -->
-    <main v-if="pickleStore.$state.color" class="picklePage" :style="{ '--cellSize': pickleStore.$state.cellSize + 'px',
-                                    '--color-1': pickleStore.$state.colors[0],
-                                    '--color-2': pickleStore.$state.colors[1],
-                                    '--color-3': pickleStore.$state.colors[2],
-                                    '--color-4': pickleStore.$state.colors[3],
-                                    '--color-5': pickleStore.$state.colors[4],
-                                    '--color-6': pickleStore.$state.colors[5],
-                                    '--color-7': pickleStore.$state.colors[6],
-                                    '--color-8': pickleStore.$state.colors[7],
-                                    '--color-9': pickleStore.$state.colors[8] }">
-        <pickle-header />
-        <pickle-matrix  />
+    <main>
+        <!-- color pickle -->
+        <div v-if="pickleStore.$state.color" class="picklePage" :style="{ '--cellSize': pickleStore.$state.cellSize + 'px',
+                                        '--color-1': pickleStore.$state.colors[0],
+                                        '--color-2': pickleStore.$state.colors[1],
+                                        '--color-3': pickleStore.$state.colors[2],
+                                        '--color-4': pickleStore.$state.colors[3],
+                                        '--color-5': pickleStore.$state.colors[4],
+                                        '--color-6': pickleStore.$state.colors[5],
+                                        '--color-7': pickleStore.$state.colors[6],
+                                        '--color-8': pickleStore.$state.colors[7],
+                                        '--color-9': pickleStore.$state.colors[8] }">
+            <pickle-header />
+            <pickle-matrix  />
+            
+            <div class="cursorNumber" :attr-color="pickleStore.$state.colorChecked" :style="{ 'transform': `translate(${x + 15}px, ${y + 15}px)` }">
+                {{ pickleStore.$state.checkedCells != 0 ? pickleStore.$state.checkedCells : '' }}
+            </div>
+        </div>
         
-        <div class="cursorNumber" :attr-color="pickleStore.$state.colorChecked" :style="{ 'transform': `translate(${x + 15}px, ${y + 15}px)` }"></div>
-    </main>
-    
-    <!-- b&w pickle -->
-    <main v-else class="picklePage" :style="{ '--cellSize': pickleStore.$state.cellSize + 'px' }">
-        <pickle-header />
-        <pickle-matrix />
-        
-        <div class="cursorNumber" :style="{ 'transform': `translate(${x + 15}px, ${y + 15}px)` }"></div>
+        <!-- b&w pickle -->
+        <div v-else-if="!pickleStore.$state.color" class="picklePage" :style="{ '--cellSize': pickleStore.$state.cellSize + 'px' }">
+            <pickle-header />
+            <pickle-matrix />
+            
+            <div v-if="pickleStore.$state.checkedCells != 0" class="cursorNumber" :style="{ 'transform': `translate(${x + 15}px, ${y + 15}px)` }">
+                {{ pickleStore.$state.checkedCells }}
+            </div>
+        </div>
     </main>
 </template>
 
@@ -50,6 +56,7 @@
 
     pickleStore.fill(data.pickles.find(pickle => pickle.id === parseInt(attrs.id)))
     pickleStore.$state.progress = 0
+    pickleStore.$state.checkedCells = 0
 
     watch([Digit1, Digit2, Digit3, Digit4, Digit5, Digit6, Digit7, Digit8, Digit9],
         ([key1, key2, key3, key4, key5, key6, key7, key8, key9]) => {
@@ -76,9 +83,15 @@
     .cursorNumber {
         position: absolute;
         min-width: 20px; height: 20px;
+        padding: 0 var(--space-2xs);
         border-radius: 2px;
         background-color: var(--color-bg-secondary);
         border: 1px solid var(--color-bg-cell-primary);
+        box-sizing: border-box;
+        font-size: var(--size-text-m);
+        line-height: 20px;
+        color: var(--color-text-primary);
+        text-align: center;
         z-index: 1;
     }
     .cursorNumber[attr-color='0'] { 
