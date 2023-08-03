@@ -127,6 +127,19 @@
             <a href="" class="user"><img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1064&q=80" /></a>
         </div>
     </header>
+
+
+    <div v-if="pickleStore.$state.difficulty == '1' ||
+                pickleStore.$state.difficulty == '2'"
+         class="progress"
+         :style="{ scale: pickleStore.$state.progress + ' 1', 'background-color': 'var(--color-text-easy)' }"></div>
+    <div v-if="pickleStore.$state.difficulty == '3'"
+         class="progress"
+         :style="{ scale: pickleStore.$state.progress + ' 1', 'background-color': 'var(--color-text-medium)' }"></div>
+    <div v-if="pickleStore.$state.difficulty == '4' ||
+                pickleStore.$state.difficulty == '5'"
+         class="progress"
+         :style="{ scale: pickleStore.$state.progress + ' 1', 'background-color': 'var(--color-text-hard)' }"></div>
 </template>
 
 <script setup>
@@ -277,5 +290,16 @@
     }
     .buttonGroup:hover {
         box-shadow: 0 0 0 1px var(--color-border-secondary);
+    }
+
+    /* progress line */
+    .progress {
+        position: fixed;
+        top: 0px; left: 50%;
+        width: 100%;
+        height: 4px;
+        background: var(--color-component-outline);
+        translate: -50%;
+        transition: scale 0.2s ease;
     }
 </style>

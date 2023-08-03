@@ -55,6 +55,7 @@
     
     const { pressed } = useMousePressed()
     const pickleStore = usePickleStore()
+    // const progress = ref(0)
     const isPressed = ref(false)
     const line = ref({
         color: null,
@@ -128,7 +129,6 @@
 
         return leftNumbers
     })
-    console.log(leftNumbersDry.value)
 
     const topNumbers = computed(() => {
         let topNumbersDraft = []
@@ -208,7 +208,6 @@
 
         return topNumbersDraft
     })
-    console.log(topNumbersDry.value)
     
     const checkSolution = () => {
         const startPointX = line.value.startPointX > line.value.endPointX ? line.value.endPointX : line.value.startPointX
@@ -242,7 +241,6 @@
 
             // the line is done!
             if(JSON.stringify(matrixNumbers) == JSON.stringify(topNumbersDry.value[x])) {
-
                 const col = document.querySelectorAll(`.matrix__solution .matrix__cell[attr-x='${x}'][attr-color='']`)
                 const numberCol = document.querySelectorAll(`.matrix__topNumbers .matrix__cell[attr-x='${x}']`)
                 
@@ -288,10 +286,7 @@
                         numberOfChecked++
                     }
                     
-                    console.log(topNumbers[i]['number'])
-                    console.log(numberOfChecked)
                     if(topNumbers[i]['number'] == numberOfChecked && topNumbers[i]['number'] > gap) {
-                        console.log('yes')
                         const cell = document.querySelector(`.matrix__solution .matrix__cell[attr-x='${x}'][attr-y='${y}']`)
                         // const cellNumber = document.querySelector(`.matrix__topNumbers .matrix__cell[attr-x='${pickle['top_numbers_clear'][x][i][2]}'][attr-y='${pickle['top_numbers_clear'][x][i][3]}']`)
 
@@ -484,6 +479,12 @@
         }
     }
 
+    const checkWin = () => {
+        if(JSON.stringify(pickleStore.$state.solution) == JSON.stringify(pickleStore.$state.matrix)) {
+            console.log('you win')
+        }
+    }
+
     const updateTheMatrix = () => {
         const startPointX = line.value.startPointX > line.value.endPointX ? line.value.endPointX : line.value.startPointX
         const startPointY = line.value.startPointY > line.value.endPointY ? line.value.endPointY : line.value.startPointY
@@ -493,6 +494,21 @@
         for(let y = startPointY; y <= endPointY; y++)
             for(let x = startPointX; x <= endPointX; x++)
                 pickleStore.$state.matrix[y][x] = line.value.color
+    }
+
+    const updateProgress = () => {
+        let sum = 0
+        let draftProgress = 0
+        
+        pickleStore.$state.solution.forEach((row, y) => {
+            row.forEach((cell, x) => {
+                if(cell === pickleStore.$state.matrix[y][x])
+                draftProgress++
+                sum++
+            })
+        })
+        
+        pickleStore.$state.progress = draftProgress / sum
     }
 
     const drawTheLine = () => {
@@ -538,9 +554,11 @@
         if(line.value.startPointX !== null) {
             line.value.endPointX = x
             line.value.endPointY = y
-            updateTheMatrix()
             
+            updateTheMatrix()
+            updateProgress()
             checkSolution()
+            checkWin()
 
             line.value.startPointX = null
             line.value.startPointY = null
