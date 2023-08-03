@@ -87,6 +87,7 @@
             leftNumbers.push(rowNumbers)
             if(rowNumbers.length > leftNumbersLength) leftNumbersLength = rowNumbers.length
         })
+
         leftNumbers.forEach((row, y) => {
             if(row.length < leftNumbersLength)
                 for(let i = row.length; i < leftNumbersLength; i++)
@@ -100,6 +101,34 @@
 
         return leftNumbers
     })
+    
+    const leftNumbersDry = computed(() => {
+        let leftNumbers = []
+        let leftNumbersLength = 0
+
+        pickleStore.$state.solution.forEach(row => {
+            let rowNumbers = []
+            let color = 0
+            let number = 0
+
+            for(let x = 0; x < row.length; x++) {
+                if(row[x] > 0 && row[x] == row[x-1]) {
+                    number++
+                    color = row[x]
+                } else if(row[x] > 0) {
+                    if(color > 0) rowNumbers.push({ 'color': color, 'number': number })
+                    number = 1
+                    color = row[x]
+                }
+            }
+            if(color > 0) rowNumbers.push({color, number})
+            leftNumbers.push(rowNumbers)
+            if(rowNumbers.length > leftNumbersLength) leftNumbersLength = rowNumbers.length
+        })
+
+        return leftNumbers
+    })
+    console.log(leftNumbersDry.value)
 
     const topNumbers = computed(() => {
         let topNumbersDraft = []
@@ -130,6 +159,8 @@
             topNumbersDraft.push(colNumbers)
             if(colNumbers.length > topNumbersHeight) topNumbersHeight = colNumbers.length
         }
+
+        // add 0 to create a matrix
         topNumbersDraft.forEach(row => {
             if(row.length < topNumbersHeight)
                 for(let i = row.length; i < topNumbersHeight; i++)
@@ -145,6 +176,313 @@
 
         return topNumbers
     })
+    
+    const topNumbersDry = computed(() => {
+        let topNumbersDraft = []
+        let topNumbersHeight = 0
+
+        for(let x = 0; x < pickleStore.$state.solution[0].length; x++) {
+            let colNumbers = []
+            let color = 0
+            let number = 0
+            
+            if(pickleStore.$state.solution[0][x] > 0) {
+                color = pickleStore.$state.solution[0][x]
+                number++
+            }
+
+            for(let y = 1; y < pickleStore.$state.solution.length; y++) {
+                if(pickleStore.$state.solution[y][x] > 0 && pickleStore.$state.solution[y][x] == pickleStore.$state.solution[y-1][x]) {
+                    number++
+                    color = pickleStore.$state.solution[y][x]
+                } else if(pickleStore.$state.solution[y][x] > 0) {
+                    if(color > 0) colNumbers.push({ 'color': color, 'number': number })
+                    number = 1
+                    color = pickleStore.$state.solution[y][x]
+                }
+            }
+            if(color > 0) colNumbers.push({color, number})
+            topNumbersDraft.push(colNumbers)
+            if(colNumbers.length > topNumbersHeight) topNumbersHeight = colNumbers.length
+        }
+
+        return topNumbersDraft
+    })
+    console.log(topNumbersDry.value)
+    
+    const checkSolution = () => {
+        const startPointX = line.value.startPointX > line.value.endPointX ? line.value.endPointX : line.value.startPointX
+        const startPointY = line.value.startPointY > line.value.endPointY ? line.value.endPointY : line.value.startPointY
+        const endPointX = line.value.startPointX < line.value.endPointX ? line.value.endPointX : line.value.startPointX
+        const endPointY = line.value.startPointY < line.value.endPointY ? line.value.endPointY : line.value.startPointY
+
+        // vertical lines
+        for(let x = startPointX; x <= endPointX; x++) {
+            let matrixNumbers = [...Array()]
+            let help = 0
+            let matrix = pickleStore.$state.matrix
+            let rowsNumber = pickleStore.$state.solution.length
+            
+            for(let y = 0; y < rowsNumber; y++) {
+                if(matrix[y][x] != 0) {
+                    if(help != 0 && matrix[y][x] == matrix[y-1][x]) {
+                        help++
+                    } else if(help != 0 && matrix[y][x] != matrix[y-1][x]) {
+                        matrixNumbers.push({'color': matrix[y-1][x], 'number': help})
+                        help = 1
+                    } else {
+                        help++
+                    }
+                } else if(help != 0) {
+                    matrixNumbers.push({'color': matrix[y-1][x], 'number': help})
+                    help = 0
+                } else help = 0
+            }
+            if(help != 0) matrixNumbers.push({'color': matrix[rowsNumber - 1][x], 'number': help})
+
+            // the line is done!
+            if(JSON.stringify(matrixNumbers) == JSON.stringify(topNumbersDry.value[x])) {
+
+                const col = document.querySelectorAll(`.matrix__solution .matrix__cell[attr-x='${x}'][attr-color='']`)
+                const numberCol = document.querySelectorAll(`.matrix__topNumbers .matrix__cell[attr-x='${x}']`)
+                
+                col.forEach(cell => { 
+                    cell.setAttribute('attr-color', 0)
+                    pickleStore.$state.matrix[cell.getAttribute('attr-y')][cell.getAttribute('attr-x')] = 0
+                })
+                numberCol.forEach(cell => { 
+                    cell.classList.add('matrix__cell-checked')
+                })
+            } 
+            // the line is not done
+            else {
+                const numberCol = document.querySelectorAll(`.matrix__topNumbers .matrix__cell[attr-x='${x}']`)
+                let y = 0
+                let topNumbers = topNumbersDry.value[x]
+
+                numberCol.forEach(cell => { 
+                    cell.classList.remove('matrix__cell-checked')
+                })
+
+                // top -> bottom
+                for(let i = 0; i < topNumbers.length; i++) {
+                    let isSmallGap = true
+                    let numberOfChecked = 0
+                    let firstCellToSkip = y
+                    let gap
+                    
+                    while (y < rowsNumber && isSmallGap) {
+                        gap = 0
+                        while(y < rowsNumber && matrix[y][x] === 0) y++
+                        while(y < rowsNumber && matrix[y][x] === '') {
+                            y++
+                            gap++
+                        }
+                        if(gap < topNumbers[i]['number'] && (matrix[y][x] == 0 || matrix[y][x] == '')) isSmallGap = true
+                        else isSmallGap = false
+                    }
+                    let lastCellToSkip = y - 1
+                    
+                    while(y < rowsNumber && matrix[y][x] > 0 && matrix[y][x] == topNumbers[i]['color']) {
+                        y++
+                        numberOfChecked++
+                    }
+                    
+                    console.log(topNumbers[i]['number'])
+                    console.log(numberOfChecked)
+                    if(topNumbers[i]['number'] == numberOfChecked && topNumbers[i]['number'] > gap) {
+                        console.log('yes')
+                        const cell = document.querySelector(`.matrix__solution .matrix__cell[attr-x='${x}'][attr-y='${y}']`)
+                        // const cellNumber = document.querySelector(`.matrix__topNumbers .matrix__cell[attr-x='${pickle['top_numbers_clear'][x][i][2]}'][attr-y='${pickle['top_numbers_clear'][x][i][3]}']`)
+
+                        // cellNumber.classList.add('matrix__number-checked')
+                        for(let helpY = firstCellToSkip; helpY <= lastCellToSkip; helpY++) {
+                            const cell = document.querySelector(`.matrix__solution .matrix__cell[attr-x='${x}'][attr-y='${helpY}']`)
+                            cell.setAttribute('attr-color', 0)
+                            pickleStore.$state.matrix[helpY][x] = 0
+                        }
+                        if(cell && topNumbers[i+1] && topNumbers[i]['color'] == topNumbers[i+1]['color'] && cell.getAttribute('attr-color') == '') {
+                            cell.setAttribute('attr-color', 0)
+                            pickleStore.$state.matrix[y][x] = 0
+                        }
+                    } else i = topNumbers.length
+                }
+
+                y = rowsNumber - 1
+
+                // bottom -> top
+                for(let i = (topNumbers.length - 1); i >= 0; i--) {
+                    let isSmallGap = true
+                    let numberOfChecked = 0
+                    let firstCellToSkip = y
+                    let gap
+                    
+                    while (y > 0 && isSmallGap) {
+                        gap = 0
+                        while(y > 0 && matrix[y][x] === 0) y--
+                        while(y > 0 && matrix[y][x] === '') {
+                            y--
+                            gap++
+                        }
+                        if(gap < topNumbers[i]['number'] && (matrix[y][x] == 0 || matrix[y][x] == '')) isSmallGap = true
+                        else isSmallGap = false
+                    }
+                    let lastCellToSkip = y + 1
+                    
+                    while(y > 0 && matrix[y][x] > 0 && matrix[y][x] == topNumbers[i]['color']) {
+                        y--
+                        numberOfChecked++
+                    }
+                    
+                    if(topNumbers[i]['number'] == numberOfChecked && topNumbers[i]['number'] > gap) {
+                        const cell = document.querySelector(`.matrix__solution .matrix__cell[attr-x='${x}'][attr-y='${y}']`)
+                        // const cellNumber = document.querySelector(`.matrix__topNumbers .matrix__cell[attr-x='${pickle['top_numbers_clear'][x][i][2]}'][attr-y='${pickle['top_numbers_clear'][x][i][3]}']`)
+
+                        // cellNumber.classList.add('matrix__number-checked')
+                        for(let helpY = lastCellToSkip; helpY <= firstCellToSkip; helpY++) {
+                            const cell = document.querySelector(`.matrix__solution .matrix__cell[attr-x='${x}'][attr-y='${helpY}']`)
+                            cell.setAttribute('attr-color', 0)
+                            pickleStore.$state.matrix[helpY][x] = 0
+                        }
+                        if(cell && topNumbers[i-1] && topNumbers[i]['color'] == topNumbers[i-1]['color'] && cell.getAttribute('attr-color') == '') {
+                            cell.setAttribute('attr-color', 0)
+                            pickleStore.$state.matrix[y][x] = 0
+                        }
+                    } else i = -1
+                }
+            }
+        }
+        
+        // horizontal lines
+        for(let y = startPointY; y <= endPointY; y++) {
+            let matrixNumbers = [...Array()]
+            let help = 0
+            let matrix = pickleStore.$state.matrix
+            let colsNumber = pickleStore.$state.solution[0].length
+            
+            for(let x = 0; x < colsNumber; x++) {
+                if(matrix[y][x] != 0) {
+                    if(help != 0 && matrix[y][x] == matrix[y][x-1]) {
+                        help++
+                    } else if(help != 0 && matrix[y][x] != matrix[y][x-1]) {
+                        matrixNumbers.push({'color': matrix[y][x-1], 'number': help})
+                        help = 1
+                    } else {
+                        help++
+                    }
+                } else if(help != 0) {
+                    matrixNumbers.push({'color': matrix[y][x-1], 'number': help})
+                    help = 0
+                } else help = 0
+            }
+            if(help != 0) matrixNumbers.push({'color': matrix[y][colsNumber - 1], 'number': help})
+
+            if(JSON.stringify(matrixNumbers) == JSON.stringify(leftNumbersDry.value[y])) {
+                const col = document.querySelectorAll(`.matrix__solution .matrix__cell[attr-y='${y}'][attr-color='']`)
+                const numberCol = document.querySelectorAll(`.matrix__leftNumbers .matrix__cell[attr-y='${y}']`)
+
+                col.forEach(cell => { 
+                    cell.setAttribute('attr-color', 0)
+                    matrix[cell.getAttribute('attr-y')][cell.getAttribute('attr-x')] = 0
+                })
+                numberCol.forEach(cell => { 
+                    cell.classList.add('matrix__cell-checked')
+                })
+            } else {
+                const numberCol = document.querySelectorAll(`.matrix__leftNumbers .matrix__cell[attr-y='${y}']`)
+                let x = 0
+                let leftNumbers = leftNumbersDry.value[y]
+
+                numberCol.forEach(cell => { 
+                    cell.classList.remove('matrix__cell-checked')
+                })
+
+                // left -> right
+                for(let i = 0; i < leftNumbersDry.value[y].length; i++) {
+                    let isSmallGap = true
+                    let numberOfChecked = 0
+                    let firstCellToSkip = x
+                    let gap
+                    
+                    while (x < colsNumber && isSmallGap) {
+                        gap = 0
+                        while(x < colsNumber && matrix[y][x] === 0) x++
+                        while(x < colsNumber && matrix[y][x] === '') {
+                            x++
+                            gap++
+                        }
+                        if(gap < leftNumbers[i][0] && (matrix[y][x] == 0 || matrix[y][x] == '')) isSmallGap = true
+                        else isSmallGap = false
+                    }
+                    let lastCellToSkip = x - 1
+                    
+                    while(x < colsNumber && matrix[y][x] > 0 && matrix[y][x] == leftNumbers[i]['color']) {
+                        x++
+                        numberOfChecked++
+                    }
+                    
+                    if(leftNumbers[i]['number'] == numberOfChecked && leftNumbers[i]['number'] > gap) {
+                        const cell = document.querySelector(`.matrix__solution .matrix__cell[attr-x='${x}'][attr-y='${y}']`)
+                        // const cellNumber = document.querySelector(`.matrix__leftNumbers .matrix__cell[attr-x='${pickle['left_numbers_clear'][y][i][2]}'][attr-y='${pickle['left_numbers_clear'][y][i][3]}']`)
+
+                        // cellNumber.classList.add('matrix__number-checked')
+                        for(let helpX = firstCellToSkip; helpX <= lastCellToSkip; helpX++) {
+                            const cell = document.querySelector(`.matrix__solution .matrix__cell[attr-y='${y}'][attr-x='${helpX}']`)
+                            cell.setAttribute('attr-color', 0)
+                            matrix[y][helpX] = 0
+                        }
+                        if(cell && leftNumbers[i+1] && leftNumbers[i]['color'] == leftNumbers[i+1]['color'] && cell.getAttribute('attr-color') == '') {
+                            cell.setAttribute('attr-color', 0)
+                            matrix[y][x] = 0
+                        }
+                    } else i = leftNumbers.length
+                }
+
+                x = colsNumber - 1
+
+                // right -> left
+                for(let i = (leftNumbers.length - 1); i >= 0; i--) {
+                    let isSmallGap = true
+                    let numberOfChecked = 0
+                    let firstCellToSkip = x
+                    let gap
+                    
+                    while (x > 0 && isSmallGap) {
+                        gap = 0
+                        while(x > 0 && matrix[y][x] === 0) x--
+                        while(x > 0 && matrix[y][x] === '') {
+                            x--
+                            gap++
+                        }
+                        if(gap < leftNumbers[i]['number'] && (matrix[y][x] == 0 || matrix[y][x] == '')) isSmallGap = true
+                        else isSmallGap = false
+                    }
+                    let lastCellToSkip = x + 1
+                    
+                    while(x > 0 && matrix[y][x] > 0 && matrix[y][x] == leftNumbers[i]['color']) {
+                        x--
+                        numberOfChecked++
+                    }
+                    
+                    if(leftNumbers[i]['number'] == numberOfChecked && leftNumbers[i]['number'] > gap) {
+                        const cell = document.querySelector(`.matrix__solution .matrix__cell[attr-x='${x}'][attr-y='${y}']`)
+                        // const cellNumber = document.querySelector(`.matrix__leftNumbers .matrix__cell[attr-x='${pickle['left_numbers_clear'][y][i][2]}'][attr-y='${pickle['left_numbers_clear'][y][i][3]}']`)
+
+                        // cellNumber.classList.add('matrix__number-checked')
+                        for(let helpX = lastCellToSkip; helpX <= firstCellToSkip; helpX++) {
+                            const cell = document.querySelector(`.matrix__solution .matrix__cell[attr-y='${y}'][attr-x='${helpX}']`)
+                            cell.setAttribute('attr-color', 0)
+                            matrix[y][helpX] = 0
+                        }
+                        if(cell && leftNumbers[i-1] && leftNumbers[i]['color'] == leftNumbers[i-1]['color'] && cell.getAttribute('attr-color') == '') {
+                            cell.setAttribute('attr-color', 0)
+                            matrix[y][x] = 0
+                        }
+                    } else i = -1
+                }
+            }
+        }
+    }
 
     const updateTheMatrix = () => {
         const startPointX = line.value.startPointX > line.value.endPointX ? line.value.endPointX : line.value.startPointX
@@ -201,6 +539,8 @@
             line.value.endPointX = x
             line.value.endPointY = y
             updateTheMatrix()
+            
+            checkSolution()
 
             line.value.startPointX = null
             line.value.startPointY = null
@@ -317,6 +657,9 @@
         font-size: var(--size-text-s);
         line-height: var(--cellSize);
         text-align: center;
+    }
+    .matrix__cell-checked {
+        color: var(--color-text-secondary);
     }
     .matrix__solution .matrix__cell:hover {
         box-shadow: inset 0 0 0 var(--cellSize) var(--color-bg-cell-primary);
