@@ -3,8 +3,8 @@
                                      'button_view-clear': props.view == 'clear',
                                      'button_view-primary': props.view == 'primary' }"
             @click="$emit('onClick')">
-        {{ props.text }}
         <slot></slot>
+        {{ props.text }}
     </button >
 </template>
 
@@ -49,5 +49,8 @@
     .button_iconOnly {
         width: var(--size-control);
         padding: 0;
+    }
+    .button:not(.button_iconOnly) {
+        gap: var(--space-2xs);
     }
 </style>

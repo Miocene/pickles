@@ -56,7 +56,6 @@
 
 <script setup>
     import { reactive, ref, watch } from 'vue'
-    // import { useStorage } from '@vueuse/core'
     
     import ComponentHeader from '@/components/ComponentHeader'
     import ComponentPicklePreview from '@/components/ComponentPicklePreview'
@@ -70,8 +69,23 @@
     
     const userStore = useUserStore()
     userStore.fill()
-    
-    const usersPickles = reactive(picklesStore.pickles.filter(pickle => pickle.published == true))
+
+    const filterUsersPickles = (pickle) => {
+        let result = false
+        
+        if(userStore.pickles_solved.length > 0) {
+            let solvedOnes = [...userStore.pickles_solved]
+            
+            if(solvedOnes.includes(pickle.id))
+                result = false
+            else if(pickle.published == true) result = true
+        } else if(pickle.published == true)
+            result = true
+
+        return result
+    }
+
+    const usersPickles = reactive(picklesStore.pickles.filter(pickle => filterUsersPickles(pickle)))
     let pickles = usersPickles
 
     const checkedDifficulty = ref(localStorage.getItem('difficulty') || 'all')

@@ -5,7 +5,7 @@ export const useUserStore = defineStore("UserStore", {
     state: () => {
         return {
             registration_date: "01.01.2022",
-            pickles_solved: [],
+            pickles_solved: [7951, 4, 4144],
             pickles_liked: [],
             email: "pickles.puzzles@gmail.com",
             id: "mrpickles",

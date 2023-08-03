@@ -16,7 +16,8 @@ export const usePickleStore = defineStore("PickleStore", {
             matrix: [],
             colorChecked: 1,
             cellSize: 20,
-            adminMode: false
+            adminMode: false,
+            solved: false
         }
     },
     actions: {
@@ -31,6 +32,7 @@ export const usePickleStore = defineStore("PickleStore", {
             this.likes = v.likes
             this.published = v.published
             this.solution = v.solution
+            this.solved = v.solved
             this.matrix = [...Array(v.solution.length)].map(() => [...Array(v.solution[0].length)].map(() => ''))
         },
         async clearMatrix() {

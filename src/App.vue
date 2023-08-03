@@ -63,7 +63,7 @@
         --line-height-text-m: 1.5em;
         --line-height-text-l: 1.6em;
     }
-    h1, h2, h3, h4, h5, h6 {
+    h1, h2, h3, h4, h5, h6, p {
         margin: 0;
     }
 

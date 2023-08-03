@@ -24,9 +24,12 @@
             <pickle-header />
             <pickle-matrix />
             
-            <div v-if="pickleStore.$state.checkedCells != 0" class="cursorNumber" :style="{ 'transform': `translate(${x + 15}px, ${y + 15}px)` }">
-                {{ pickleStore.$state.checkedCells }}
-            </div>
+            <!-- not solved -->
+            <template v-if="!pickleStore.$state.solved">
+                <div v-if="pickleStore.$state.checkedCells != 0" class="cursorNumber" :style="{ 'transform': `translate(${x + 15}px, ${y + 15}px)` }">
+                    {{ pickleStore.$state.checkedCells }}
+                </div>
+            </template>
         </div>
     </main>
 </template>
@@ -38,10 +41,13 @@
     import { useMouse, useMagicKeys } from '@vueuse/core'
 
     import { usePickleStore } from '@/stores/PickleStore'
+    import { useUserStore } from '@/stores/UserStore'
     import PickleHeader from '@/components/PickleHeader'
     import PickleMatrix from '@/components/PickleMatrix'
     
     const pickleStore = usePickleStore()
+    const userStore = useUserStore()
+    
     const attrs = useAttrs()
     const backupColor = ref(1)
     const { Digit1, Digit2, Digit3, Digit4, Digit5, Digit6, Digit7, Digit8, Digit9 } = useMagicKeys({
@@ -54,7 +60,9 @@
     })
     const { x, y } = useMouse({ touch: false })
 
-    pickleStore.fill(data.pickles.find(pickle => pickle.id === parseInt(attrs.id)))
+    let thisPickle = data.pickles.find(pickle => pickle.id === parseInt(attrs.id))
+    thisPickle.solved = userStore.pickles_solved.includes(thisPickle.id) ? true : false
+    pickleStore.fill(thisPickle)
     pickleStore.$state.progress = 0
     pickleStore.$state.checkedCells = 0
 

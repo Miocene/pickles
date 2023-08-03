@@ -3,12 +3,26 @@
                                               '--topNumbers': topNumbers.length,
                                               '--cellsX': pickleStore.$state.solution[0].length,
                                               '--cellsY': pickleStore.$state.solution.length }">
-        <div class="matrix">
-            <div class="matrix__corner matrix__corner-1"></div>
-            <div class="matrix__corner matrix__corner-2"></div>
-            <div class="matrix__corner matrix__corner-3"></div>
-            <div class="matrix__corner matrix__corner-4"></div>
-            <div class="matrix__topNumbers">
+
+        <!-- for the win -->
+        <template v-if="pickleStore.$state.solved">
+            <component-confetti/>
+            <h1 class="congratsHeader">{{ congrats[Math.floor(Math.random()*congrats.length)] }}</h1>
+            <p class="congratsDescription">this is {{ pickleStore.$state.name }}. do you like this pickle?</p>
+            <component-button v-if="userStore.pickles_liked.includes(pickleStore.$state.id)" view="secondary" text="liked" class="congratsButton" @click="userStore.pickles_liked.splice(userStore.pickles_liked.indexOf(pickleStore.$state.id), 1)">
+                <icon-heart-filled size="m" />
+            </component-button>
+            <component-button v-else view="secondary" text="like" class="congratsButton" @click="userStore.pickles_liked.push(pickleStore.$state.id)">
+                <icon-heart size="m" />
+            </component-button>
+        </template>
+
+        <div :class="pickleStore.$state.solved ? 'matrix matrix-solved' : 'matrix'">
+            <div v-if="!pickleStore.$state.solved" class="matrix__corner matrix__corner-1"></div>
+            <div v-if="!pickleStore.$state.solved" class="matrix__corner matrix__corner-2"></div>
+            <div v-if="!pickleStore.$state.solved" class="matrix__corner matrix__corner-3"></div>
+            <div v-if="!pickleStore.$state.solved" class="matrix__corner matrix__corner-4"></div>
+            <div v-if="!pickleStore.$state.solved" class="matrix__topNumbers">
                 <div class="matrix__row" v-for="(row, itemY) in topNumbers" :key="row[0].y">
                     <div class="matrix__cell" v-for="(item, itemX) in row" :key="item.x" :attr-x="itemX" :attr-y="itemY" :attr-color="item.color">
                         <template v-if="item.number > 0">
@@ -18,7 +32,7 @@
                     </div>
                 </div>
             </div>
-            <div class="matrix__leftNumbers">
+            <div v-if="!pickleStore.$state.solved" class="matrix__leftNumbers">
                 <div class="matrix__row" v-for="(row, itemY) in leftNumbers" :key="row[0].y">
                     <div class="matrix__cell" v-for="(item, itemX) in row" :key="item.x" :attr-x="itemX" :attr-y="itemY" :attr-color="item.color">
                         <template v-if="item.number > 0">
@@ -28,17 +42,24 @@
                     </div>
                 </div>
             </div>
+
+            <!-- matrix -->
             <div class="matrix__solution" @mousedown="(event) => event.preventDefault()">
                 <div class="matrix__row" v-for="(row, itemY) in pickleStore.$state.solution" :key="row[0].y">
-                    <div class="matrix__cell" v-for="(item, itemX) in row" :key="item.x" :attr-x="itemX" :attr-y="itemY" :attr-color="pickleStore.$state.adminMode ? item : ''" @mousedown="mouseDown(itemX, itemY)" @mouseup="mouseUp(itemX, itemY)" @mouseenter="manageLine(itemX, itemY)"></div>
+                    <template v-if="!pickleStore.$state.solved">
+                        <div class="matrix__cell" v-for="(item, itemX) in row" :key="item.x" :attr-x="itemX" :attr-y="itemY" :attr-color="pickleStore.$state.adminMode ? item : ''" @mousedown="mouseDown(itemX, itemY)" @mouseup="mouseUp(itemX, itemY)" @mouseenter="manageLine(itemX, itemY)"></div>
+                    </template>
+                    <template v-else>
+                        <div class="matrix__cell" v-for="(item, itemX) in row" :key="item.y" :attr-x="itemX" :attr-y="itemY" :attr-color="item" ></div>
+                    </template>
                 </div>
             </div>
-            <div class="matrix__rightNumbers">
+            <div v-if="!pickleStore.$state.solved" class="matrix__rightNumbers">
                 <div class="matrix__row" v-for="row in leftNumbers" :key="row[0].y">
                     <div class="matrix__cell">{{ row[0].y + 1 }}</div>
                 </div>
             </div>
-            <div class="matrix__bottomNumbers">
+            <div v-if="!pickleStore.$state.solved" class="matrix__bottomNumbers">
                 <div class="matrix__row">
                     <div class="matrix__cell" v-for="row in topNumbers[0]" :key="row.x">{{ row.x + 1 }}</div>
                 </div>
@@ -52,9 +73,15 @@
     import { useMousePressed } from '@vueuse/core'
 
     import { usePickleStore } from '@/stores/PickleStore'
+    import { useUserStore } from '@/stores/UserStore'
+    import ComponentConfetti from '@/components/ComponentConfetti'
+    import IconHeart from '@/components/icons/IconHeart'
+    import IconHeartFilled from '@/components/icons/IconHeartFilled'
     
+    const congrats = ['well done!', 'you did it!', 'bravo!', 'hooray!', 'wonderful!', 'amazing!', 'impressive!', 'awesome!', 'woo-hoo!', 'great job!']
     const { pressed } = useMousePressed()
     const pickleStore = usePickleStore()
+    const userStore = useUserStore()
 
     const isPressed = ref(false)
     const line = ref({
@@ -482,6 +509,13 @@
     const checkWin = () => {
         if(JSON.stringify(pickleStore.$state.solution) == JSON.stringify(pickleStore.$state.matrix)) {
             console.log('you win')
+            pickleStore.$state.solved = true
+
+            if(pickleStore.$state.solution[0].length * 20)
+                pickleStore.$state.cellSize = Math.abs(90 / pickleStore.$state.solution[0].length)
+            else
+                pickleStore.$state.cellSize = 20
+
         }
     }
 
@@ -524,7 +558,7 @@
         // show the number of colored cells
         let xCells = Math.abs(line.value.startPointX - line.value.endPointX)
         let yCells = Math.abs(line.value.startPointY - line.value.endPointY)
-        
+
         if(xCells != 0 && yCells == 0)
             pickleStore.$state.checkedCells = xCells + 1
         else if(xCells == 0 && yCells != 0)
@@ -605,7 +639,10 @@
 <style scoped>
     .picklePage__matrix {
         display: flex;
+        flex-direction: column;
         box-sizing: border-box;
+        align-items: center;
+        justify-content: center;
         overflow: scroll;
     }
     .matrix {
@@ -617,6 +654,13 @@
                             calc(var(--cellsY) * var(--cellSize)) 
                             calc(var(--cellSize) + 4px);
         margin: auto;
+    }
+    .matrix-solved {
+        display: block;
+        width: calc(var(--cellsX) * var(--cellSize));
+        height: calc(var(--cellsY) * var(--cellSize));
+        margin: initial;
+        border: 2px solid var(--color-border-primary);
     }
     .matrix__topNumbers {
         position: sticky; top: 0;
@@ -692,7 +736,7 @@
     .matrix__cell-checked {
         color: var(--color-text-secondary);
     }
-    .matrix__solution .matrix__cell:hover {
+    .matrix:not(.matrix-solved) .matrix__solution .matrix__cell:hover {
         box-shadow: inset 0 0 0 var(--cellSize) var(--color-bg-cell-primary);
     }
     .matrix__topNumbers .matrix__cell:not(:empty):hover,
@@ -700,7 +744,7 @@
     .matrix__cell:hover {
         cursor: default;
     }
-    .matrix__solution .matrix__cell:hover {
+    .matrix:not(.matrix-solved) .matrix__solution .matrix__cell:hover {
         cursor: pointer;
     }
     .matrix__solution .matrix__cell[attr-color='0'] { 
@@ -751,4 +795,15 @@
 
     /* cross light */
     .matrix__solution .matrix__cell:hover {}
+
+    /* congrats */
+    .congratsHeader {
+        margin-bottom: var(--space-s);
+    }
+    .congratsDescription {
+        margin-bottom: var(--space-l);
+    }
+    .congratsButton {
+        margin-bottom: var(--space-xl);
+    }
 </style>

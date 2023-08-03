@@ -83,7 +83,7 @@
         </div>
 
         <!-- color palette for color pickle -->
-        <fieldset v-if="pickleStore.$state.color" class="picklePage__centerHeaderPart">
+        <fieldset v-if="pickleStore.$state.color && !pickleStore.$state.solved" class="picklePage__centerHeaderPart">
             <label v-for="(item, i) in pickleStore.$state.colors" :key="i" class="color" :for="'color' + (i + 1)">
                 <input type="radio" :value="i+1" name="color" :id="'color' + (i + 1)" v-model="pickleStore.$state.colorChecked" v-bind:checked="i === 0" />
             </label>
@@ -92,7 +92,7 @@
         </fieldset>
 
         <!-- color palette for b&w pickle -->
-        <fieldset v-if="!pickleStore.$state.color" class="picklePage__centerHeaderPart">
+        <fieldset v-if="!pickleStore.$state.color && !pickleStore.$state.solved" class="picklePage__centerHeaderPart">
             <div class="colorChecked"></div>
             <p class="text text_size_s text_view_primary"> — click</p>
             <div class="colorSkip"></div>
@@ -102,10 +102,10 @@
 
 
         <div class="picklePage__rightHeaderPart">
-            <component-button v-if="userStore.$state.admin" view="clear" iconOnly @click="pickleStore.$state.adminMode = true; pickleStore.$state.matrix = pickleStore.$state.solution">
+            <component-button v-if="userStore.$state.admin && !pickleStore.$state.solved" view="clear" iconOnly @click="pickleStore.$state.adminMode = true; pickleStore.$state.matrix = pickleStore.$state.solution">
                 <icon-edit size="m" />
             </component-button>
-            <div class="buttonGroup">
+            <div v-if="!pickleStore.$state.solved" class="buttonGroup">
                 <component-button view="clear" iconOnly @click="decreaseCellSize">
                     <icon-minus size="m" />
                 </component-button>
@@ -113,7 +113,7 @@
                     <icon-plus size="m" />
                 </component-button>
             </div>
-            <div class="buttonGroup">
+            <div v-if="!pickleStore.$state.solved" class="buttonGroup">
                 <component-button view="clear" iconOnly>
                     <icon-undo size="m" />
                 </component-button>
@@ -168,19 +168,18 @@
     }
 
     const restartPickle = () => {
-        console.log('sss')
-        pickleStore.$state.matrix = [...Array(pickleStore.$state.solution.length)].map(() => [...Array(pickleStore.$state.solution[0].length)].map(() => ''))
         const cells = document.querySelectorAll('.matrix__solution .matrix__cell')
         const numbers = document.querySelectorAll('.matrix__cell-checked')
-
+        
         cells.forEach(cell => {
             cell.setAttribute('attr-color', '')
         })
         numbers.forEach(cell => {
             cell.classList.remove('matrix__cell-checked')
         })
-
+        
         pickleStore.$state.progress = 0
+        pickleStore.clearMatrix()
     }
 </script>
 
