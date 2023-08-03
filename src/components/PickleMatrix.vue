@@ -642,7 +642,6 @@
         flex-direction: column;
         box-sizing: border-box;
         align-items: center;
-        justify-content: center;
         overflow: scroll;
     }
     .matrix {
@@ -798,6 +797,7 @@
 
     /* congrats */
     .congratsHeader {
+        margin-top: var(--space-3xl);
         margin-bottom: var(--space-s);
     }
     .congratsDescription {

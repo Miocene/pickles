@@ -21,6 +21,7 @@
         align-items: center;
         height: var(--size-control);
         padding: 0 var(--space-s);
+        flex-shrink: 0;
         border: 0;
         border-radius: 99em;
         transition: background-color 0.25s ease;

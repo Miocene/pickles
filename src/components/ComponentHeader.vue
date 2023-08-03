@@ -24,7 +24,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: var(--space-s) var(--space-l);
+        padding: var(--space-s) var(--space-m);
         background-color: var(--color-bg-primary);
         z-index: 1;
     }
@@ -38,6 +38,8 @@
     }
     .header_logo img {
         display: block;
+        width: 40px;
+        aspect-ratio: 1/1;
         margin: 0;
     }
 </style>

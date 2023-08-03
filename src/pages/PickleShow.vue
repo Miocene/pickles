@@ -85,7 +85,7 @@
     .picklePage {
         height: 100vh;
         display: grid;
-        grid-template-rows: 60px calc(100vh - 60px);
+        grid-template-rows: 64px calc(100vh - 60px);
     }
 
     .cursorNumber {
