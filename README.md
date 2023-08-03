@@ -1,4 +1,6 @@
-# pickles-f
+# pickles
+
+It's my pet project for nonograms.
 
 ## Project setup
 ```
