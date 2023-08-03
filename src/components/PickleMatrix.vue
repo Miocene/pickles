@@ -55,7 +55,7 @@
     
     const { pressed } = useMousePressed()
     const pickleStore = usePickleStore()
-    // const progress = ref(0)
+
     const isPressed = ref(false)
     const line = ref({
         color: null,

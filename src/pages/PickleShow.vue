@@ -15,11 +15,13 @@
         
         <div class="cursorNumber" :attr-color="pickleStore.$state.colorChecked" :style="{ 'transform': `translate(${x + 15}px, ${y + 15}px)` }"></div>
     </main>
-
+    
     <!-- b&w pickle -->
     <main v-else class="picklePage" :style="{ '--cellSize': pickleStore.$state.cellSize + 'px' }">
         <pickle-header />
         <pickle-matrix />
+        
+        <div class="cursorNumber" :style="{ 'transform': `translate(${x + 15}px, ${y + 15}px)` }"></div>
     </main>
 </template>
 
@@ -47,6 +49,7 @@
     const { x, y } = useMouse({ touch: false })
 
     pickleStore.fill(data.pickles.find(pickle => pickle.id === parseInt(attrs.id)))
+    pickleStore.$state.progress = 0
 
     watch([Digit1, Digit2, Digit3, Digit4, Digit5, Digit6, Digit7, Digit8, Digit9],
         ([key1, key2, key3, key4, key5, key6, key7, key8, key9]) => {
@@ -74,6 +77,7 @@
         position: absolute;
         min-width: 20px; height: 20px;
         border-radius: 2px;
+        background-color: var(--color-bg-secondary);
         border: 1px solid var(--color-bg-cell-primary);
         z-index: 1;
     }

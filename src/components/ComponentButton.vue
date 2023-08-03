@@ -28,15 +28,23 @@
     }
     .button_view-clear {
         background-color: transparent;
+        color: var(--color-component-clear-text);
+        fill: var(--color-component-clear-text);
     }
     .button_view-clear:hover {
         background-color: rgba(255, 255, 255, 0.152);
+        color: var(--color-component-clear-hover-text);
+        fill: var(--color-component-clear-hover-text);
     }
     .button_view-primary {
         background-color: transparent;
+        color: var(--color-component-primary-hover-text);
+        fill: var(--color-component-primary-hover-text);
     }
     .button_view-primary:hover {
         background-color: rgba(255, 255, 255, 0.152);
+        color: var(--color-component-primary-hover-text);
+        fill: var(--color-component-primary-hover-text);
     }
     .button_iconOnly {
         width: var(--size-control);

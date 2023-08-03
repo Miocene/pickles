@@ -133,10 +133,10 @@
                 pickleStore.$state.difficulty == '2'"
          class="progress"
          :style="{ scale: pickleStore.$state.progress + ' 1', 'background-color': 'var(--color-text-easy)' }"></div>
-    <div v-if="pickleStore.$state.difficulty == '3'"
+    <div v-else-if="pickleStore.$state.difficulty == '3'"
          class="progress"
          :style="{ scale: pickleStore.$state.progress + ' 1', 'background-color': 'var(--color-text-medium)' }"></div>
-    <div v-if="pickleStore.$state.difficulty == '4' ||
+    <div v-else-if="pickleStore.$state.difficulty == '4' ||
                 pickleStore.$state.difficulty == '5'"
          class="progress"
          :style="{ scale: pickleStore.$state.progress + ' 1', 'background-color': 'var(--color-text-hard)' }"></div>
