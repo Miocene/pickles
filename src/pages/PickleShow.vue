@@ -1,5 +1,5 @@
 <template>
-    <main>
+    <main v-if="parseInt(attrs.id) > 0">
         <!-- color pickle -->
         <div v-if="pickleStore.$state.color" class="gridView" :style="{ '--cellSize': pickleStore.$state.cellSize + 'px',
                                         '--color-1': pickleStore.$state.colors[0],
@@ -32,6 +32,10 @@
             </template>
         </div>
     </main>
+    <div class="gridView" v-else>
+        <component-header />
+        <component-404 />
+    </div>
 </template>
 
 <script setup>
@@ -44,6 +48,8 @@
     import { useUserStore } from '@/stores/UserStore'
     import PickleHeader from '@/components/PickleHeader'
     import PickleMatrix from '@/components/PickleMatrix'
+    import Component404 from '@/components/Component404'
+    import ComponentHeader from '@/components/ComponentHeader'
     
     const pickleStore = usePickleStore()
     const userStore = useUserStore()
@@ -60,11 +66,13 @@
     })
     const { x, y } = useMouse({ touch: false })
 
-    let thisPickle = data.pickles.find(pickle => pickle.id === parseInt(attrs.id))
-    thisPickle.solved = userStore.pickles_solved.includes(thisPickle.id) ? true : false
-    pickleStore.fill(thisPickle)
-    pickleStore.$state.progress = 0
-    pickleStore.$state.checkedCells = 0
+    if(parseInt(attrs.id) > 0) {
+        let thisPickle = data.pickles.find(pickle => pickle.id === parseInt(attrs.id))
+        thisPickle.solved = userStore.pickles_solved.includes(thisPickle.id) ? true : false
+        pickleStore.fill(thisPickle)
+        pickleStore.$state.progress = 0
+        pickleStore.$state.checkedCells = 0
+    }
 
     watch([Digit1, Digit2, Digit3, Digit4, Digit5, Digit6, Digit7, Digit8, Digit9],
         ([key1, key2, key3, key4, key5, key6, key7, key8, key9]) => {
