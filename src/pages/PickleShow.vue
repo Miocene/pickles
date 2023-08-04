@@ -1,7 +1,7 @@
 <template>
     <main>
         <!-- color pickle -->
-        <div v-if="pickleStore.$state.color" class="picklePage" :style="{ '--cellSize': pickleStore.$state.cellSize + 'px',
+        <div v-if="pickleStore.$state.color" class="gridView" :style="{ '--cellSize': pickleStore.$state.cellSize + 'px',
                                         '--color-1': pickleStore.$state.colors[0],
                                         '--color-2': pickleStore.$state.colors[1],
                                         '--color-3': pickleStore.$state.colors[2],
@@ -20,7 +20,7 @@
         </div>
         
         <!-- b&w pickle -->
-        <div v-else-if="!pickleStore.$state.color" class="picklePage" :style="{ '--cellSize': pickleStore.$state.cellSize + 'px' }">
+        <div v-else-if="!pickleStore.$state.color" class="gridView" :style="{ '--cellSize': pickleStore.$state.cellSize + 'px' }">
             <pickle-header />
             <pickle-matrix />
             
@@ -82,11 +82,6 @@
 </script>
 
 <style scoped>
-    .picklePage {
-        height: 100vh;
-        display: grid;
-        grid-template-rows: 64px calc(100vh - 60px);
-    }
 
     .cursorNumber {
         position: absolute;

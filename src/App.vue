@@ -55,6 +55,7 @@
         --size-text-2xl: 32px;
         --size-text-3xl: 60px;
         --size-text-4xl: 80px;
+        --size-text-5xl: 120px;
 
         /* line heights */
         --line-height-text-2xs: 1.1em;
@@ -67,7 +68,7 @@
         margin: 0;
     }
 
-    .text {
+    .text, button {
         font-family: 'Outfit', sans-serif;
         font-weight: 400;
         transition: color 0.25s ease;
@@ -183,6 +184,12 @@
     }
     .user img {
         width: 100%;
+    }
+
+    .gridView {
+        height: 100vh;
+        display: grid;
+        grid-template-rows: 64px calc(100vh - 60px);
     }
 
     .choiceGroup {
