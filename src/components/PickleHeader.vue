@@ -114,15 +114,7 @@
                 </component-button>
             </div>
             <div v-if="!pickleStore.$state.solved" class="buttonGroup">
-                <component-button view="clear" iconOnly>
-                    <icon-undo size="m" />
-                </component-button>
-                <component-button view="clear" iconOnly @click="restartPickle()">
-                    <icon-restart size="m" />
-                </component-button>
-                <component-button view="clear" iconOnly>
-                    <icon-redo size="m" />
-                </component-button>
+                <slot></slot>
             </div>
             <a href="" class="user"><img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1064&q=80" /></a>
         </div>
@@ -150,14 +142,13 @@
     import IconBack from '@/components/icons/IconBack'
     import IconPlus from '@/components/icons/IconPlus'
     import IconMinus from '@/components/icons/IconMinus'
-    import IconUndo from '@/components/icons/IconUndo'
-    import IconRedo from '@/components/icons/IconRedo'
-    import IconRestart from '@/components/icons/IconRestart'
     import IconEdit from '@/components/icons/IconEdit'
     import IconCheck from '@/components/icons/IconCheck'
     
     const pickleStore = usePickleStore()
     const userStore = useUserStore()
+
+    const emits = defineEmits(['undoMatrix', 'redoMatrix'])
 
     const increaseCellSize = () => {
         if(pickleStore.$state.cellSize < 34) pickleStore.$state.cellSize = pickleStore.$state.cellSize + 2
@@ -165,21 +156,6 @@
 
     const decreaseCellSize = () => {
         if(pickleStore.$state.cellSize > 16) pickleStore.$state.cellSize = pickleStore.$state.cellSize - 2
-    }
-
-    const restartPickle = () => {
-        const cells = document.querySelectorAll('.matrix__solution .matrix__cell')
-        const numbers = document.querySelectorAll('.matrix__cell-checked')
-        
-        cells.forEach(cell => {
-            cell.setAttribute('attr-color', '')
-        })
-        numbers.forEach(cell => {
-            cell.classList.remove('matrix__cell-checked')
-        })
-        
-        pickleStore.$state.progress = 0
-        pickleStore.clearMatrix()
     }
 </script>
 

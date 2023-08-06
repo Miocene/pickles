@@ -41,7 +41,7 @@
         color: var(--color-component-clear-text);
         fill: var(--color-component-clear-text);
     }
-    .button_view-clear:hover {
+    .button_view-clear:not([disabled]):hover {
         background-color: rgba(255, 255, 255, 0.152);
         color: var(--color-component-clear-hover-text);
         fill: var(--color-component-clear-hover-text);
@@ -51,7 +51,7 @@
         color: var(--color-component-primary-text);
         fill: var(--color-component-primary-text);
     }
-    .button_view-primary:hover {
+    .button_view-primary:not([disabled]):hover {
         background-color: var(--color-component-primary-hover-bg);
         color: var(--color-component-primary-hover-text);
         fill: var(--color-component-primary-hover-text);
@@ -62,5 +62,10 @@
     }
     .button:not(.button_iconOnly) {
         gap: var(--space-2xs);
+    }
+
+    .button[disabled], .button[disabled]:hover {
+        cursor: not-allowed;
+        opacity: 0.8;
     }
 </style>
