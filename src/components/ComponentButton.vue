@@ -66,6 +66,6 @@
 
     .button[disabled], .button[disabled]:hover {
         cursor: not-allowed;
-        opacity: 0.8;
+        opacity: 0.6;
     }
 </style>

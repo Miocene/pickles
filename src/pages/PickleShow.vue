@@ -32,10 +32,10 @@
     <!-- b&w pickle -->
     <div v-else-if="parseInt(attrs.id) > 0 && !pickleStore.$state.color" class="gridView" :style="{ '--cellSize': pickleStore.$state.cellSize + 'px' }">
         <pickle-header>
-            <component-button :disabled="!canUndo" view="clear" iconOnly @click="undoMatrix()">
+            <component-button :disabled="!canUndo || history.length <= 2" view="clear" iconOnly @click="undoMatrix()">
                 <icon-undo size="m" />
             </component-button>
-            <component-button :disabled="!canUndo" view="clear" iconOnly @click="restartPickle()">
+            <component-button :disabled="!canUndo || history.length <= 2" view="clear" iconOnly @click="restartPickle()">
                 <icon-restart size="m" />
             </component-button>
             <component-button :disabled="!canRedo" view="clear" iconOnly @click="redoMatrix()">
